@@ -1,0 +1,9 @@
+{
+  "name": "dptb-server",
+  "version": "0.0.1",
+  "description": "The server for Don't Push the Button",
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.4.8"
+  }
+}

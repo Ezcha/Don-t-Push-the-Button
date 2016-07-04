@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+	<head>
+		<!-- Don't Push the Button by Ezcha -->
+		<title>Don't Push the Button</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style>
+			@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+			body, html {
+				font-family: 'Open Sans', sans-serif;
+			}
+			img {
+				width: 100%;
+				max-width: 600px;
+			}
+		</style>
+	</head>
+	<body>
+		<center>
+			<h1>Don't Push the Button</h1>
+			<a href="http://www.ezcha.net"><h3>Created By Ezcha</h3></a>
+			<a href='#'><img id='button' src='http://i.imgur.com/NrlC6Iq.png' /></a>
+			<h2 id='time'>The button has not been pressed for 0 seconds.</h2>
+			<h2 id='highscore'>Longest Time: 0 Seconds</h2>
+			<h2 id='users'>0 users connected.</h2>
+		</center>
+		<script>
+			var socket = io();
+			var audio = new Audio('http://files.ezcha.net/resources/push.mp3');
+			
+			$( document ).ready(function() {
+				$("#button").click(function() {
+					socket.emit('push');
+				});
+			});
+			
+			socket.on('push', function() {
+				audio.play();
+				$("#button").attr("src","http://i.imgur.com/g2OHoUa.png");
+				setTimeout(function() {
+					$("#button").attr("src","http://i.imgur.com/NrlC6Iq.png");
+					audio.pause();
+					audio.currentTime = 0;
+				}, 400);
+			});
+			socket.on('time', function(time) {
+				if (time != 1) {
+					$('#time').html('The button has not been pressed for '+time.toString()+' seconds.');
+				} else {
+					$('#time').html('The button has not been pressed for '+time.toString()+' second.');
+				}
+			});
+			socket.on('highscore', function(time) {
+				if (time != 1) {
+					$('#highscore').html('Longest Time: '+time.toString()+' seconds.');
+				} else {
+					$('#highscore').html('Longest Time: '+time.toString()+' second.');
+				}
+			});
+			socket.on('users', function(users) {
+				if (users != 1) {
+					$('#users').html(users.toString()+' users connected.');
+				} else {
+					$('#users').html(users.toString()+' user connected.');
+				}
+			});
+		</script>
+	</body>
+</html>

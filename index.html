@@ -46,8 +46,21 @@
 			var displayExtra = false;
 			var muted = false;
 			
+			function randomString() {
+				var text = "";
+				var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+				for( var i=0; i < 5; i++ )
+					text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+				return text;
+			}
+			
+			var newId = randomString();
+			
 			$( document ).ready(function() {
-				$("#button").click(function() {
+				$("#button").attr("id", "button"+newId);
+				$("#button"+newId).click(function() {
 					socket.emit('push');
 				});
 				$("#info-link").click(function() {
@@ -76,12 +89,16 @@
 			
 			socket.on('push', function() {
 				audio.play();
-				$("#button").attr("src","http://i.imgur.com/g2OHoUa.png");
+				$("#button"+newId).attr("src","http://i.imgur.com/g2OHoUa.png");
 				setTimeout(function() {
-					$("#button").attr("src","http://i.imgur.com/NrlC6Iq.png");
+					$("#button"+newId).attr("src","http://i.imgur.com/NrlC6Iq.png");
 					audio.pause();
 					audio.currentTime = 0;
 				}, 400);
+			});
+			
+			socket.on('block', function() {
+				document.location.href = "/blocked";
 			});
 			socket.on('time', function(time) {
 				if (time != 1) {

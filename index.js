@@ -3,7 +3,6 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var port = 80;
 
 var date = new Date();
 var newDate = 0;
@@ -15,8 +14,18 @@ var mostUsers = 0;
 var pushCount = 0;
 var counter = 0;
 
+/* Poorly Made 'Config' */
+var port = 80; //The port the server runs on. (80 is the default)
+var spamProtection = 1; //Seconds between button clicks. Set to -1 to disable.
+var maxUsers = 100; //Maximum amount of connections the server will allow. Set to -1 to disable.
+/* ok that's all */
+
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/blocked', function(req, res){
+	res.sendFile(__dirname + '/blocked.html');
 });
 
 http.listen(port, function(){
@@ -28,6 +37,14 @@ io.on('connection', function(socket) {
 	if (mostUsers < users) {
 		mostUsers = users;
 		io.emit('mostUsers', users);
+	}
+	if (users > maxUsers && maxUsers != -1) {
+		setTimeout(function() {
+			socket.emit("block");
+			if (socket != null) {
+				socket.disconnect();
+			}
+		},100);
 	}
 	io.emit('time', seconds);
 	io.emit('highscore', highscore);
@@ -44,7 +61,7 @@ io.on('connection', function(socket) {
 		//Spam protection?
 		//Use socket.id
 		newDate = new Date();
-		if ((newDate - date)/1000 >= 1) {
+		if ((newDate - date)/1000 >= spamProtection) {
 			console.log('Button has been pushed.');
 			date = new Date();
 			seconds = 0;

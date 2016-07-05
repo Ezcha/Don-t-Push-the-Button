@@ -22,10 +22,6 @@ http.listen(port, function(){
 
 io.on('connection', function(socket) {
 	users += 1;
-	if (users > mostUsers) {
-		mostUsers = users;
-		io.emit('mostUsers', users);
-	}
 	io.emit('time', seconds);
 	io.emit('highscore', highscore);
 	io.emit('users', users);
@@ -50,6 +46,10 @@ io.on('connection', function(socket) {
 		counter = setInterval(function() {
 			seconds += 1;
 			io.emit('time', seconds);
+			if (users > mostUsers) {
+				mostUsers = users;
+				io.emit('mostUsers', users);
+			}
 			if (seconds > highscore) {
 				highscore = seconds;
 				io.emit('highscore', highscore);
@@ -61,6 +61,10 @@ io.on('connection', function(socket) {
 counter = setInterval(function() {
 	seconds += 1;
 	io.emit('time', seconds);
+	if (users > mostUsers) {
+		mostUsers = users;
+		io.emit('mostUsers', users);
+	}
 	if (seconds > highscore) {
 		highscore = seconds;
 		io.emit('highscore', highscore);

@@ -15,24 +15,62 @@
 				width: 100%;
 				max-width: 600px;
 			}
+			.extra {
+				display: none;
+				background-color: #EEEEEE;
+				border-radius: 5px;
+				padding: 5px;
+				width: 90%;
+			}
 		</style>
 	</head>
 	<body>
 		<center>
 			<h1>Don't Push the Button</h1>
 			<a href="http://www.ezcha.net"><h3>Created By Ezcha</h3></a>
+			<a href="https://github.com/Ezcha/Don-t-Push-the-Button"><h3>On GitHub</h3></a>
 			<a href='#'><img id='button' src='http://i.imgur.com/NrlC6Iq.png' /></a>
 			<h2 id='time'>The button has not been pressed for 0 seconds.</h2>
 			<h2 id='highscore'>Longest Time: 0 Seconds</h2>
 			<h2 id='users'>0 users connected.</h2>
+			<a id="info-link" href="#"><h2 id="info">Show Extras</h2></a>
+			<div class="extra" id="info-container">
+				<h2 id='most-users'>Most Users Online: 0</h2>
+				<h2 id='most-pushes'>Total Pushes: 0</h2>
+				<a href="#"><h2 id='mute'>Mute Audio</h2></a>
+			</div>
 		</center>
 		<script>
 			var socket = io();
 			var audio = new Audio('http://files.ezcha.net/resources/push.mp3');
+			var displayExtra = false;
+			var muted = false;
 			
 			$( document ).ready(function() {
 				$("#button").click(function() {
 					socket.emit('push');
+				});
+				$("#info-link").click(function() {
+					if (displayExtra) {
+						displayExtra = false;
+						$("#info-container").hide();
+						$("#info").text("Show Extras");
+					} else {
+						displayExtra = true;
+						$("#info-container").show();
+						$("#info").text("Hide Extras");
+					}
+				});
+				$("#mute").click(function() {
+					if (muted) {
+						muted = false;
+						audio.volume = 1;
+						$("#mute").text("Mute Audio");
+					} else {
+						muted = true;
+						audio.volume = 0;
+						$("#mute").text("Unmute Audio");
+					}
 				});
 			});
 			
@@ -65,6 +103,12 @@
 				} else {
 					$('#users').html(users.toString()+' user connected.');
 				}
+			});
+			socket.on('mostUsers', function(users) {
+				$('#most-users').html("Most Users Online: "+users.toString());
+			});
+			socket.on('pushCount', function(count) {
+				$('#most-pushes').html("Total Pushes: "+count.toString());
 			});
 		</script>
 	</body>

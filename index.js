@@ -5,6 +5,9 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = 80;
 
+var date = new Date();
+var newDate = 0;
+
 var seconds = 0;
 var highscore = 0;
 var users = 0;
@@ -40,21 +43,25 @@ io.on('connection', function(socket) {
 	socket.on('push', function() {
 		//Spam protection?
 		//Use socket.id
-		console.log('Button has been pushed.');
-		seconds = 0;
-		pushCount += 1;
-		io.emit('time', seconds);
-		io.emit('pushCount', pushCount);
-		io.emit('push');
-		clearInterval(counter);
-		counter = setInterval(function() {
-			seconds += 1;
+		newDate = new Date();
+		if ((newDate - date)/1000 >= 1) {
+			console.log('Button has been pushed.');
+			date = new Date();
+			seconds = 0;
+			pushCount += 1;
 			io.emit('time', seconds);
-			if (seconds > highscore) {
-				highscore = seconds;
-				io.emit('highscore', highscore);
-			}
-		},1000);
+			io.emit('pushCount', pushCount);
+			io.emit('push');
+			clearInterval(counter);
+			counter = setInterval(function() {
+				seconds += 1;
+				io.emit('time', seconds);
+				if (seconds > highscore) {
+					highscore = seconds;
+					io.emit('highscore', highscore);
+				}
+			},1000);
+		}
 	});
 });
 

@@ -38,7 +38,8 @@ io.on('connection', function(socket) {
 		console.log('User disconnected. '+users.toString()+" users connected.");
 	});
 	socket.on('push', function() {
-		console.log(socket.id);
+		//Spam protection?
+		//Use socket.id
 		console.log('Button has been pushed.');
 		seconds = 0;
 		pushCount += 1;
